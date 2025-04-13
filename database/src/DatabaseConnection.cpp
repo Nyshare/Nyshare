@@ -39,18 +39,6 @@ DatabaseConnection::DatabaseConnection() {
   }
 }
 
-// DatabaseConnection::~DatabaseConnection() {
-//   if (m_conn != nullptr) {
-//     mysql_close(m_conn.get());
-//   }
-//   if (m_result != nullptr) {
-//     mysql_free_result(m_result.get());
-//   }
-//   if (m_stmt != nullptr) {
-//     mysql_stmt_close(m_stmt.get());
-//   }
-// }
-
 bool DatabaseConnection::connect(const std::string& host,
                                  const std::string& user,
                                  const std::string& passwd,
@@ -80,8 +68,8 @@ bool DatabaseConnection::empty() {
   return mysql_stmt_num_rows(m_stmt.get()) == 0;
 }
 
-std::vector<Json> DatabaseConnection::result() {
-  std::vector<Json> result;
+std::vector<json> DatabaseConnection::result() {
+  std::vector<json> result;
   if (m_result == nullptr) {
     warn("[DatabaseConnection] Failed get result because result is nullptr");
     return result;
@@ -149,7 +137,7 @@ std::vector<Json> DatabaseConnection::result() {
           "[DatabaseConnection] Error or truncation while fetching result row");
       break;
     }
-    Json row;
+    json row;
     for (int j = 0; j < column_count; ++j) {
       const char* col_name = fields[j].name;
       if (is_null_flags[j]) {

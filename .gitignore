@@ -2,3 +2,6 @@
 README.md
 build
 bin
+lib
+build.sh
+test
