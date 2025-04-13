@@ -6,10 +6,11 @@
 #include <chrono>
 #include <memory>
 
-#include "Json.h"
 #include "Logger.h"
+#include "json.hpp"
 
 using namespace std::chrono;
+using json = nlohmann::json;
 
 class DatabaseConnection {
  public:
@@ -39,7 +40,7 @@ class DatabaseConnection {
   bool empty();
 
   // 获取JSON格式的结果集
-  std::vector<Json> result();
+  std::vector<json> result();
 
   // 刷新连接空闲起始时间点
   void refresh();

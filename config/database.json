@@ -1,0 +1,11 @@
+{
+  "host": "192.168.88.3",
+  "user": "root",
+  "passwd": "617020",
+  "db": "test",
+  "port": 3306,
+  "min_size": 2,
+  "max_size": 4,
+  "idle_time": 1000,
+  "timeout": 1000
+}

@@ -69,7 +69,7 @@ DatabaseConnectionPool::DatabaseConnectionPool()
 }
 
 void DatabaseConnectionPool::load_config() {
-  std::string config = Filer::readFile("./database.json");
+  std::string config = Filer::readFile("../config/database.json");
   if (config.empty()) {
     fatal(
         "[DatabaseConnectionPool] Database config file is nonexist or empty:%s",
@@ -77,19 +77,20 @@ void DatabaseConnectionPool::load_config() {
     throw std::logic_error(
         "[DatabaseConnectionPool] Database config file is nonexist or empty");
   }
-  Json configJson;
-  configJson.parse(config);
-  m_host = configJson["host"].asString();
-  m_user = configJson["user"].asString();
-  m_passwd = configJson["passwd"].asString();
-  m_db = configJson["db"].asString();
-  m_port = configJson["port"].asInt();
-  m_min_size = configJson["min_size"].asInt();
-  m_max_size = configJson["max_size"].asInt();
-  m_max_idle_time = configJson["idle_time"].asInt();
-  m_timeout = configJson["timeout"].asInt();
+  json configJson = json::parse(config);
+  m_host = configJson.value("host", "localhost");
+  m_user = configJson.value("user", "");
+  m_passwd = configJson.value("passwd", "");
+  m_db = configJson.value("db", "");
+  m_port = configJson.value("port", 3306);
+  m_min_size =
+      configJson.value("min_size", std::thread::hardware_concurrency());
+  m_max_size =
+      configJson.value("max_size", std::thread::hardware_concurrency());
+  m_max_idle_time = configJson.value("idle_time", 1000);
+  m_timeout = configJson.value("timeout", 1000);
   // 检查必要配置，其他配置可设置默认值
-  if (m_host.empty() || m_user.empty() || m_passwd.empty() || m_db.empty()) {
+  if (m_user.empty() || m_passwd.empty() || m_db.empty()) {
     fatal("[DatabaseConnectionPool] Database config file is invalid");
     throw std::logic_error(
         "[DatabaseConnectionPool] Database config file is invalid");
