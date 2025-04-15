@@ -5,9 +5,9 @@
 
 #include <chrono>
 #include <memory>
+#include <nlohmann/json.hpp>
 
 #include "Logger.h"
-#include "json.hpp"
 
 using namespace std::chrono;
 using json = nlohmann::json;

@@ -5,3 +5,4 @@ bin
 lib
 build.sh
 test
+dump.rdb
