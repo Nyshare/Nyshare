@@ -21,7 +21,7 @@ DatabaseConnectionPool::~DatabaseConnectionPool() {
   }
 }
 
-DatabaseConnectionPool& DatabaseConnectionPool::getInstance() {
+DatabaseConnectionPool& DatabaseConnectionPool::instance() {
   static DatabaseConnectionPool databaseConnectionPool;
   return databaseConnectionPool;
 }

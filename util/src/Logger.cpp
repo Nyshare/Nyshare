@@ -128,7 +128,7 @@ void Logger::rotate() {
 }
 
 void Logger::output_log() {
-  while (true) {
+  while (!m_stop || !m_taskQueue.empty()) {
     std::unique_lock<std::mutex> locker(m_queueMutex);
     m_queueCond.wait(locker,
                      [this]() { return !m_taskQueue.empty() || m_stop; });

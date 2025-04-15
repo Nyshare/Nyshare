@@ -12,8 +12,10 @@ class DatabaseService {
 
     email_already_registered = 4,  // 邮箱已注册
     username_already_taken = 5,    // 用户名已被注册
-    registration_successful = 6    // 注册成功
+    registration_successful = 6,   // 注册成功
 
+    email_not_registered = 7,       // 邮箱尚未注册
+    password_reset_successful = 8,  // 密码重置成功
   };
 
   // 处理登录
@@ -24,6 +26,7 @@ class DatabaseService {
   static database_status signup(const std::string &email,
                                 const std::string &username,
                                 const std::string &password);
-
- private:
+  // 重置密码
+  static database_status resetPassword(const std::string &username,
+                                       const std::string &password);
 };

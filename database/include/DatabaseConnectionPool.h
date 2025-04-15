@@ -11,7 +11,7 @@ class DatabaseConnectionPool {
  public:
   ~DatabaseConnectionPool();
   // 获取单例对象
-  static DatabaseConnectionPool& getInstance();
+  static DatabaseConnectionPool& instance();
 
   // 获取连接（线程安全，自定义删除器自动回收）
   std::shared_ptr<DatabaseConnection> acquire();
