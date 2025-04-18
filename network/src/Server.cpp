@@ -1,8 +1,12 @@
 #include "Server.h"
 
 #include <iostream>
+#include <nlohmann/json.hpp>
 
+#include "Filer.h"
 #include "Logger.h"
+
+using json = nlohmann::json;
 
 Server& Server::instance() {
   static Server server;
@@ -19,7 +23,12 @@ void Server::set_handle_onconnect_function(
 Server::Server()
     : loop_(std::make_shared<EventLoop>()),
       acceptor_(std::make_unique<Acceptor>(loop_)) {
-  acceptor_->bind(host_, port_);
+  load_config();
+  if (host_.empty()) {
+    acceptor_->bind(port_);
+  } else {
+    acceptor_->bind(host_, port_);
+  }
   acceptor_->listen();
   acceptor_->set_handle_new_connection_function(
       [this](int fd, const std::string& host, int port) {
@@ -44,4 +53,15 @@ void Server::handle_disconnect(int fd) {
   }
   info("[Server] Client %d disconnected", fd);
   connections_.erase(fd);
+}
+
+void Server::load_config() {
+  std::string config_string = Filer::readFile("../config/network.json");
+  if (config_string.empty()) {
+    fatal("[Server] Not found network config json file");
+    return;
+  }
+  json config = json::parse(config_string);
+  host_ = config.value("host", "");
+  port_ = config.value("port", 8080);
 }
