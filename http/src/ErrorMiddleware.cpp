@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "/home/orchid/Server/util/include/Logger.h"
+#include "Logger.h"
 
 void ErrorMiddleware::handleRequest(HttpRequest& httpRequest,
                                     HttpResponse& httpResponse,

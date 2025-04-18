@@ -1,6 +1,6 @@
 #include "LogMiddleware.h"
 
-#include "/home/orchid/Server/util/include/Logger.h"
+#include "Logger.h"
 
 void LogMiddleware::handleRequest(HttpRequest& httpRequest,
                                   HttpResponse& httpResponse,
