@@ -1,6 +1,6 @@
 #include "RouterMiddleware.h"
 
-#include "/home/orchid/Server/util/include/Logger.h"
+#include "Logger.h"
 
 RouterMiddleware::RouterMiddleware(const Router& router) : _router(router) {}
 

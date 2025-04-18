@@ -1,7 +1,7 @@
 #include "StaticFileMiddleware.h"
 
-#include "/home/orchid/Server/util/include/Logger.h"
 #include "Filer.h"
+#include "Logger.h"
 
 StaticFileMiddleware::StaticFileMiddleware(const std::string& staticDir)
     : _staticDir(staticDir) {}
