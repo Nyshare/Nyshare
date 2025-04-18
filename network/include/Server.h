@@ -22,6 +22,8 @@ class Server {
 
   void handle_disconnect(int fd);
 
+  void load_config();
+
  private:
   std::string host_ = "192.168.88.3";
   int port_ = 8080;
