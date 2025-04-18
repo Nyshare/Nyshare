@@ -1,0 +1,74 @@
+/* 基础样式重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: #f0f9ff;
+  /* 青春活力的浅蓝背景 */
+  color: #333;
+  padding: 1rem;
+}
+
+/* 主容器 */
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* 标题样式 */
+.title {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #0077cc;
+  /* 鲜亮蓝色 */
+}
+
+/* 每个作品卡片 */
+.post-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 119, 204, 0.1);
+  padding: 1rem;
+  margin-bottom: 1.2rem;
+  transition: transform 0.2s;
+}
+
+.post-card:hover {
+  transform: translateY(-3px);
+}
+
+/* 文字内容 */
+.post-text {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* 按钮区域 */
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* 通用按钮样式 */
+.btn {
+  padding: 0.5rem 1rem;
+  background-color: #00c2a8;
+  /* 绿色调 */
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.btn:hover {
+  background-color: #009e8a;
+}

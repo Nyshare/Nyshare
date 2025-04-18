@@ -19,7 +19,7 @@ HttpHandler::HttpHandler()
   _middlewareChain->addMiddleware(std::make_unique<LogMiddleware>());
   _middlewareChain->addMiddleware(std::make_unique<AuthMiddleware>());
   _middlewareChain->addMiddleware(
-      std::make_unique<StaticFileMiddleware>("../public/static"));
+      std::make_unique<StaticFileMiddleware>("../static"));
   _middlewareChain->addMiddleware(std::make_unique<ErrorMiddleware>());
   _middlewareChain->addMiddleware(std::make_unique<RouterMiddleware>(*_router));
   _router->addRoute(HttpRequest::POST, "/login",
