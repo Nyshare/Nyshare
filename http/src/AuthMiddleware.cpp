@@ -19,7 +19,7 @@ void AuthMiddleware::handleRequest(HttpRequest& httpRequest,
   // 获取包含 token 的响应头
   std::string auth = httpRequest.getHeader("Authorization");
   if (auth.empty()) {
-    httpResponse.addHeader("Location", "/signin.html");
+    httpResponse.addHeader("Location", "/login.html");
     HttpUtil::setFailResponse(httpResponse, HttpResponse::Found, " token无效");
     return;
   }
@@ -27,13 +27,13 @@ void AuthMiddleware::handleRequest(HttpRequest& httpRequest,
   // 从请求中提取 token
   std::string token = HttpUtil::extract_token(httpRequest);
   if (token.empty()) {
-    httpResponse.addHeader("Location", "/signin.html");
+    httpResponse.addHeader("Location", "/login.html");
     HttpUtil::setFailResponse(httpResponse, HttpResponse::Found, " token无效");
     return;
   }
   // 验证 token
   if (!HttpUtil::verify_token(token)) {
-    httpResponse.addHeader("Location", "/signin.html");
+    httpResponse.addHeader("Location", "/login.html");
     HttpUtil::setFailResponse(httpResponse, HttpResponse::Found, " token无效");
     return;
   }
