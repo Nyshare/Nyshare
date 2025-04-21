@@ -10,7 +10,7 @@ void AuthMiddleware::handleRequest(HttpRequest& httpRequest,
                                    HttpResponse& httpResponse,
                                    std::function<void()> next) {
   static const std::unordered_set<std::string> protectedPaths = {
-      "/profile.html"};
+      "/api/upload_post"};
   if (protectedPaths.find(httpRequest.getPath()) == protectedPaths.end()) {
     next();
     return;
@@ -24,15 +24,17 @@ void AuthMiddleware::handleRequest(HttpRequest& httpRequest,
     return;
   }
 
-  // 从响应头提取 token
-  std::istringstream authStream(auth);
-  std::string bearer, token;
-  authStream >> bearer >> token;
-
-  // 从数据库查询 token 的有效性
-  if (HttpUtil::verify_token(token).empty()) {
+  // 从请求中提取 token
+  std::string token = HttpUtil::extract_token(httpRequest);
+  if (token.empty()) {
     httpResponse.addHeader("Location", "/signin.html");
-    HttpUtil::setFailResponse(httpResponse, HttpResponse::Found, "token无效");
+    HttpUtil::setFailResponse(httpResponse, HttpResponse::Found, " token无效");
+    return;
+  }
+  // 验证 token
+  if (!HttpUtil::verify_token(token)) {
+    httpResponse.addHeader("Location", "/signin.html");
+    HttpUtil::setFailResponse(httpResponse, HttpResponse::Found, " token无效");
     return;
   }
   next();

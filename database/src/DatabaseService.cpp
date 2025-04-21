@@ -3,7 +3,7 @@
 #include "DatabaseUtil.h"
 
 DatabaseService::database_status DatabaseService::login(
-    const std::string& username, const std::string& password) {
+    const std::string& username, const std::string& password, int& user_id) {
   auto database = DatabaseConnectionPool::instance().acquire();
   // 1、检查用户名是否注册
   if (!database->query("SELECT id, password FROM users WHERE username = ?",
@@ -21,6 +21,7 @@ DatabaseService::database_status DatabaseService::login(
     return database_status::incorrect_password;
   }
   // 3、登录成功
+  user_id = result.value("id", 0);
   return database_status::login_successful;
 }
 
@@ -76,4 +77,41 @@ DatabaseService::database_status DatabaseService::resetPassword(
     return database_status::database_error;
   }
   return database_status::password_reset_successful;
+}
+
+std::vector<json> DatabaseService::getPosts() {
+  auto database = DatabaseConnectionPool::instance().acquire();
+  if (!database->query("SELECT id, text_url FROM posts ORDER BY create_at "
+                       "DESC LIMIT 10")) {
+    return {};
+  }
+  return database->result();
+}
+
+bool DatabaseService::uploadPost(int user_id, const std::string& url,
+                                 const std::string& expire_at) {
+  auto database = DatabaseConnectionPool::instance().acquire();
+  // 开启事务
+  database->transaction();
+
+  // 检查用户是否已注册
+  if (!database->query("SELECT id FROM users WHERE id = ?", user_id)) {
+    database->rollback();
+    return false;
+  }
+  if (database->empty()) {
+    database->rollback();
+    return false;
+  }
+
+  // 创建作品
+  if (!database->query(
+          "INSERT INTO posts (user_id, text_url, expire_at) VALUES (?, ?, ?)",
+          user_id, url, expire_at)) {
+    database->rollback();
+    return false;
+  }
+
+  // 提交事务
+  return database->commit();
 }

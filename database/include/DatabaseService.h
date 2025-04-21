@@ -1,6 +1,10 @@
 #pragma once
 
+#include <nlohmann/json.hpp>
+
 #include "DatabaseConnectionPool.h"
+
+using json = nlohmann::json;
 
 class DatabaseService {
  public:
@@ -18,9 +22,9 @@ class DatabaseService {
     password_reset_successful = 8,  // 密码重置成功
   };
 
-  // 处理登录
+  // 处理登录，返回处理结果，并将用户ID通过引用传递
   static database_status login(const std::string &username,
-                               const std::string &password);
+                               const std::string &password, int &user_id);
 
   // 处理注册
   static database_status signup(const std::string &email,
@@ -29,4 +33,11 @@ class DatabaseService {
   // 重置密码
   static database_status resetPassword(const std::string &username,
                                        const std::string &password);
+
+  // 获取作品
+  static std::vector<json> getPosts();
+
+  // 上传作品
+  static bool uploadPost(int user_id, const std::string &url,
+                         const std::string &expire_at);
 };

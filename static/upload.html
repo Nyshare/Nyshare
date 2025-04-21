@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>上传作品</title>
+  <link rel="stylesheet" href="/css/upload.css">
+</head>
+
+<body>
+  <div class="container">
+    <h1>上传作品</h1>
+
+    <!-- 作品上传表单 -->
+    <form id="uploadForm">
+      <label for="expire_at">作品到期时间:</label>
+      <input type="datetime-local" id="expire_at" name="expire_at" required>
+
+      <label for="text">文本内容:</label>
+      <textarea id="text" name="text" required></textarea>
+
+      <button type="submit">上传作品</button>
+    </form>
+
+    <!-- 显示结果信息 -->
+    <div id="result" class="result"></div>
+  </div>
+
+  <script src="/js/upload.js"></script>
+</body>
+
+</html>

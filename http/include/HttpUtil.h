@@ -32,9 +32,15 @@ class HttpUtil {
   // 将请求体解析为json格式，失败返回null类型的json
   static json parseRequestBody(const std::string& body);
   // 生成token
-  static std::string generate_token(const std::string username);
-  // 验证tokrn
-  static std::string verify_token(const std::string& token_str);
-  //  声明纯虚析构防止实例化
-  virtual ~HttpUtil() = 0;
+  static std::string generate_token(int user_id);
+  // 验证token
+  static bool verify_token(const std::string& token_str);
+  // 从请求中提取token
+  static std::string extract_token(const HttpRequest& request);
+
+  // 从Token中提取用户ID
+  static int extract_user_id(const std::string& token_str);
+
+  // 生成唯一的作品码
+  static std::string generate_unique_code();
 };

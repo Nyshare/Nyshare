@@ -31,7 +31,8 @@ void AuthHandler::login(HttpRequest& httpRequest, HttpResponse& httpResponse) {
     return;
   }
 
-  switch (DatabaseService::login(username, password)) {
+  int user_id = 0;
+  switch (DatabaseService::login(username, password, user_id)) {
     case status::user_not_registered: {
       HttpUtil::HttpUtil::setFailResponse(
           httpResponse, HttpResponse::BadRequest, "用户未注册");
@@ -43,7 +44,8 @@ void AuthHandler::login(HttpRequest& httpRequest, HttpResponse& httpResponse) {
       break;
     }
     case status::login_successful: {
-      loginJson["token"] = HttpUtil::generate_token(username);
+      loginJson["token"] = HttpUtil::generate_token(user_id);
+      // debug("token: %s", loginJson["token"].dump().c_str());
       HttpUtil::setSuccessResponse(httpResponse, loginJson, "登录成功");
       break;
     }

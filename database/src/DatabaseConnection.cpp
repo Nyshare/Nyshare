@@ -57,9 +57,9 @@ bool DatabaseConnection::transaction() {
   return mysql_autocommit(m_conn.get(), false);
 }
 
-bool DatabaseConnection::commit() { return mysql_commit(m_conn.get()); }
+bool DatabaseConnection::commit() { return !mysql_commit(m_conn.get()); }
 
-bool DatabaseConnection::rollback() { return mysql_rollback(m_conn.get()); }
+bool DatabaseConnection::rollback() { return !mysql_rollback(m_conn.get()); }
 
 bool DatabaseConnection::empty() {
   if (m_stmt == nullptr || m_result == nullptr) {

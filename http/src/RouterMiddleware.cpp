@@ -8,11 +8,12 @@ void RouterMiddleware::handleRequest(HttpRequest& httpRequest,
                                      HttpResponse& httpResponse,
                                      std::function<void()> next) {
   if (!_router.route(httpRequest, httpResponse)) {
-    info("[RouterMiddleware] Route not found:%s %s",
-         httpRequest.methodToString().c_str(), httpRequest.getPath().c_str());
-    httpResponse.setStatusCode(HttpResponse::NotFound);
+    // info("[RouterMiddleware] Route not found:%s %s",
+    //      httpRequest.methodToString().c_str(),
+    //      httpRequest.getPath().c_str());
+    // httpResponse.setStatusCode(HttpResponse::NotFound);
+    next();
   }
-  next();
 }
 
 void RouterMiddleware::handleResponse(HttpRequest& httpRequest,

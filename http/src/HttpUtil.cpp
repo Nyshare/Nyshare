@@ -163,11 +163,11 @@ json HttpUtil::parseRequestBody(const std::string& body) {
   return body_json;
 }
 
-std::string HttpUtil::generate_token(const std::string username) {
+std::string HttpUtil::generate_token(int user_id) {
   auto token = jwt::create()
                    .set_issuer("Nyshare")
                    .set_audience("nyshare-web")
-                   .set_subject(username)
+                   .set_subject(std::to_string(user_id))  // 用户ID
                    .set_issued_at(std::chrono::system_clock::now())
                    .set_expires_at(std::chrono::system_clock::now() +
                                    std::chrono::hours{8760})  // 有效期一年
@@ -176,8 +176,7 @@ std::string HttpUtil::generate_token(const std::string username) {
   return token;
 }
 
-std::string HttpUtil::verify_token(const std::string& token_str) {
-  const static std::string empty_string;
+bool HttpUtil::verify_token(const std::string& token_str) {
   try {
     auto decoded = jwt::decode(token_str);
 
@@ -186,12 +185,51 @@ std::string HttpUtil::verify_token(const std::string& token_str) {
         .with_issuer("Nyshare")
         .with_audience("nyshare-web")
         .verify(decoded);
-
-    return decoded.get_subject();  // 从 token 中拿到 username
+    return true;
   } catch (const std::exception& e) {
     warn("Token failed verify: %s", e.what());
-    return empty_string;
+    return false;
   }
 }
 
-HttpUtil::~HttpUtil() {}
+std::string HttpUtil::extract_token(const HttpRequest& request) {
+  static const std::string empty_string;
+  std::string auth = request.getHeader("Authorization");
+  if (auth.empty()) {
+    return empty_string;
+  }
+  std::istringstream authStream(auth);
+  std::string bearer, token;
+  authStream >> bearer >> token;
+  return token;
+}
+
+int HttpUtil::extract_user_id(const std::string& token_str) {
+  try {
+    auto decoded = jwt::decode(token_str);
+    return std::stoi(decoded.get_subject());
+  } catch (const std::exception& e) {
+    debug("token = %s", token_str.c_str());
+    warn("Token failed verify: %s", e.what());
+    return -1;
+  }
+}
+
+std::string HttpUtil::generate_unique_code() {
+  // 获取当前时间戳
+  auto now = std::chrono::system_clock::now();
+  auto duration = now.time_since_epoch();
+  auto milliseconds =
+      std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+
+  // 生成随机数
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> dis(100000, 999999);
+  int random_number = dis(gen);
+
+  // 组合时间戳和随机数
+  std::stringstream ss;
+  ss << milliseconds << "_" << random_number;
+  return ss.str();
+}
