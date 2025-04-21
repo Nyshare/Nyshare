@@ -60,3 +60,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+document.getElementById('post-btn').addEventListener('click', () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    alert('未登录');
+    window.location.href = '/login.html';
+    return;
+  }
+
+  fetch('/upload.html', {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+    .then(res => {
+      if (!res.ok) throw new Error('加载失败');
+      return res.text();
+    })
+    .then(html => {
+      // 在当前页面替换成投稿页
+      document.open();
+      document.write(html);
+      document.close();
+    })
+    .catch(err => {
+      alert('无法加载投稿页');
+      console.error(err);
+    });
+});
