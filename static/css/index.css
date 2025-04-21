@@ -72,3 +72,47 @@ body {
 .btn:hover {
   background-color: #009e8a;
 }
+
+.post-card {
+  margin: 1em 0;
+  padding: 1em;
+  border-radius: 10px;
+  background-color: #fefefe;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.post-text {
+  font-family: monospace;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  background: #f8f8f8;
+  padding: 1em;
+  border-radius: 6px;
+  color: #333;
+}
+
+.post-text.error {
+  color: red;
+}
+
+#post-button-container {
+  position: fixed;
+  right: 20px;
+  /* 离页面右侧 20px */
+  bottom: 780px;
+  /* 离页面底部 200px */
+}
+
+#post-btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#post-btn:hover {
+  background-color: #45a049;
+}

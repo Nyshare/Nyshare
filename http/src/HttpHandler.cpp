@@ -7,6 +7,7 @@
 #include "ErrorMiddleware.h"
 #include "LogMiddleware.h"
 #include "Logger.h"
+#include "PostsHandler.h"
 #include "RouterMiddleware.h"
 #include "StaticFileMiddleware.h"
 
@@ -15,28 +16,38 @@ HttpHandler::HttpHandler()
       _httpResponse(std::make_unique<HttpResponse>()),
       _router(std::make_unique<Router>()),
       _middlewareChain(std::make_unique<MiddlewareChain>()) {
-  // 默认中间件链：日志 -> 权限校验 -> 静态文件 -> 错误处理 -> 路由器
+  // 默认中间件链：日志 -> 权限校验 -> API -> 静态文件 -> 错误处理 -> 路由器
   _middlewareChain->addMiddleware(std::make_unique<LogMiddleware>());
   _middlewareChain->addMiddleware(std::make_unique<AuthMiddleware>());
-  _middlewareChain->addMiddleware(
-      std::make_unique<StaticFileMiddleware>("../static"));
   _middlewareChain->addMiddleware(std::make_unique<ErrorMiddleware>());
   _middlewareChain->addMiddleware(std::make_unique<RouterMiddleware>(*_router));
-  _router->addRoute(HttpRequest::POST, "/login",
+  _middlewareChain->addMiddleware(
+      std::make_unique<StaticFileMiddleware>("../static"));
+  _router->addRoute(HttpRequest::POST, "/api/login",
                     [](HttpRequest& req, HttpResponse& res) {
                       AuthHandler::login(req, res);
                     });
-  _router->addRoute(HttpRequest::POST, "/send_verification_code",
+  _router->addRoute(HttpRequest::POST, "/api/send_verification_code",
                     [](HttpRequest& req, HttpResponse& res) {
                       AuthHandler::sendVerificationCode(req, res);
                     });
-  _router->addRoute(HttpRequest::POST, "/signup",
+  _router->addRoute(HttpRequest::POST, "/api/signup",
                     [](HttpRequest& req, HttpResponse& res) {
                       AuthHandler::signup(req, res);
                     });
-  _router->addRoute(HttpRequest::POST, "/reset_password",
+  _router->addRoute(HttpRequest::POST, "/api/reset_password",
                     [](HttpRequest& req, HttpResponse& res) {
                       AuthHandler::resetPassword(req, res);
+                    });
+  _router->addRoute(HttpRequest::GET, "/api/get_posts",
+                    [](HttpRequest& req, HttpResponse& res) {
+                      // 处理函数
+                      PostsHandler::handleGetPosts(req, res);
+                    });
+  _router->addRoute(HttpRequest::POST, "/api/upload_post",
+                    [](HttpRequest& req, HttpResponse& res) {
+                      // 处理函数
+                      PostsHandler::handleUploadPost(req, res);
                     });
 }
 

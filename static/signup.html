@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注册</title>
+  <link rel="stylesheet" href="/css/signup.css">
+  <link rel="icon" href="/favicon.ico">
+</head>
+
+<body>
+  <div class="signup-container">
+    <h2>注册</h2>
+    <form id="signupForm">
+      <label for="email">邮箱：</label>
+      <input type="email" id="email" name="email" placeholder="请输入邮箱" required>
+      <p id="emailError" class="error-message"></p>
+
+      <div class="input-group">
+        <input type="text" id="verificationCode" name="verificationCode" placeholder="请输入验证码" required>
+        <button type="button" id="sendCodeButton">发送验证码</button>
+      </div>
+      <p id="captchaError" class="error-message"></p>
+
+      <label for="username">用户名：</label>
+      <input type="text" id="username" name="username" placeholder="请输入用户名" required>
+      <p id="usernameError" class="error-message"></p>
+
+      <label for="password">密码：</label>
+      <input type="password" id="password" name="password" placeholder="请输入密码" required>
+      <p id="passwordError" class="error-message"></p>
+
+      <label for="confirmPassword">确认密码：</label>
+      <input type="password" id="confirmPassword" name="confirmPassword" placeholder="请确认密码" required>
+      <p id="confirmPasswordError" class="error-message"></p>
+
+      <button type="submit" id="signupButton">注册</button>
+      <p id="errorMessage" class="error-message"></p>
+    </form>
+    <p class="account-link">已有账号？<a href="/login.html">点击登录</a></p>
+  </div>
+
+  <script src="/js/signup.js"></script>
+</body>
+
+</html>
