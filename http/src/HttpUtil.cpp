@@ -158,7 +158,7 @@ json HttpUtil::parseRequestBody(const std::string& body) {
   try {
     body_json = json::parse(body);
   } catch (const std::exception& e) {
-    warn("[LoginHandler] parse json error:%s", body.c_str());
+    warn("[HttpUtil] parse json error:%s", body.c_str());
   }
   return body_json;
 }
