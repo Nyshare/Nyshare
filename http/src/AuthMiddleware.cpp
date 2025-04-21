@@ -10,7 +10,7 @@ void AuthMiddleware::handleRequest(HttpRequest& httpRequest,
                                    HttpResponse& httpResponse,
                                    std::function<void()> next) {
   static const std::unordered_set<std::string> protectedPaths = {
-      "/api/upload_post"};
+      "/api/upload_post", "/upload.html"};
   if (protectedPaths.find(httpRequest.getPath()) == protectedPaths.end()) {
     next();
     return;
