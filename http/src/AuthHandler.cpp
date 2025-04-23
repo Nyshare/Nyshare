@@ -11,12 +11,12 @@
 using json = nlohmann::json;
 using status = DatabaseService::database_status;
 
-void AuthHandler::login(HttpRequest& httpRequest, HttpResponse& httpResponse) {
+void AuthHandler::login(HttpRequest& request, HttpResponse& response) {
   json loginJson;
   // 从请求体中解析出用户名和密码
-  json requestJson = HttpUtil::parseRequestBody(httpRequest.getBody());
+  json requestJson = HttpUtil::parseRequestBody(request.body());
   if (requestJson.type() == json::value_t::null) {
-    HttpUtil::setFailResponse(httpResponse, HttpResponse::BadRequest,
+    HttpUtil::setFailResponse(response, HttpResponse::BadRequest,
                               "请求体格式错误");
   }
 
@@ -26,7 +26,7 @@ void AuthHandler::login(HttpRequest& httpRequest, HttpResponse& httpResponse) {
   // 检验用户名和密码的有效性
   if (!HttpUtil::legalUsername(username) ||
       !HttpUtil::legalPassword(password)) {
-    HttpUtil::setFailResponse(httpResponse, HttpResponse::BadRequest,
+    HttpUtil::setFailResponse(response, HttpResponse::BadRequest,
                               "用户名或密码格式错误");
     return;
   }
@@ -34,37 +34,36 @@ void AuthHandler::login(HttpRequest& httpRequest, HttpResponse& httpResponse) {
   int user_id = 0;
   switch (DatabaseService::login(username, password, user_id)) {
     case status::user_not_registered: {
-      HttpUtil::HttpUtil::setFailResponse(
-          httpResponse, HttpResponse::BadRequest, "用户未注册");
+      HttpUtil::HttpUtil::setFailResponse(response, HttpResponse::BadRequest,
+                                          "用户未注册");
       break;
     }
     case status::incorrect_password: {
-      HttpUtil::HttpUtil::setFailResponse(
-          httpResponse, HttpResponse::Unauthorized, "密码错误");
+      HttpUtil::HttpUtil::setFailResponse(response, HttpResponse::Unauthorized,
+                                          "密码错误");
       break;
     }
     case status::login_successful: {
       loginJson["token"] = HttpUtil::generate_token(user_id);
       // debug("token: %s", loginJson["token"].dump().c_str());
-      HttpUtil::setSuccessResponse(httpResponse, loginJson, "登录成功");
+      HttpUtil::setSuccessResponse(response, loginJson, "登录成功");
       break;
     }
     default: {
       loginJson["success"] = false;
       loginJson["message"] = "服务器异常";
-      httpResponse.setStatusCode(HttpResponse::InternalServerError);
+      response.status(HttpResponse::InternalServerError);
       break;
     }
   }
 }
 
-void AuthHandler::signup(HttpRequest& httpRequest, HttpResponse& httpResponse) {
+void AuthHandler::signup(HttpRequest& request, HttpResponse& response) {
   json jsonSignup;
   // 解析注册参数
-  json requestJson =
-      HttpUtil::HttpUtil::parseRequestBody(httpRequest.getBody());
+  json requestJson = HttpUtil::HttpUtil::parseRequestBody(request.body());
   if (requestJson.type() == json::value_t::null) {
-    HttpUtil::setFailResponse(httpResponse, HttpResponse::InternalServerError,
+    HttpUtil::setFailResponse(response, HttpResponse::InternalServerError,
                               "请求格式错误");
     return;
   }
@@ -78,51 +77,50 @@ void AuthHandler::signup(HttpRequest& httpRequest, HttpResponse& httpResponse) {
       !HttpUtil::legalVerificationCode(verificationCode) ||
       !HttpUtil::legalUsername(username) ||
       !HttpUtil::legalPassword(password)) {
-    HttpUtil::setFailResponse(httpResponse, HttpResponse::BadRequest,
-                              "格式错误");
+    HttpUtil::setFailResponse(response, HttpResponse::BadRequest, "格式错误");
     return;
   }
 
   if (!Cacher::instance().check_verification_code(email, verificationCode)) {
-    HttpUtil::setFailResponse(httpResponse, HttpResponse::Unauthorized,
+    HttpUtil::setFailResponse(response, HttpResponse::Unauthorized,
                               "验证码无效");
     return;
   }
 
   switch (DatabaseService::signup(email, username, password)) {
     case DatabaseService::email_already_registered: {
-      HttpUtil::setFailResponse(httpResponse, HttpResponse::Unauthorized,
+      HttpUtil::setFailResponse(response, HttpResponse::Unauthorized,
                                 "邮箱已注册");
       break;
     }
     case DatabaseService::username_already_taken: {
-      HttpUtil::setFailResponse(httpResponse, HttpResponse::Unauthorized,
+      HttpUtil::setFailResponse(response, HttpResponse::Unauthorized,
                                 "用户名已注册");
       break;
     }
     case DatabaseService::registration_successful: {
-      HttpUtil::setSuccessResponse(httpResponse, jsonSignup, "注册成功");
+      HttpUtil::setSuccessResponse(response, jsonSignup, "注册成功");
       break;
     }
     default: {
-      HttpUtil::setFailResponse(httpResponse, HttpResponse::InternalServerError,
+      HttpUtil::setFailResponse(response, HttpResponse::InternalServerError,
                                 "服务器异常");
       break;
     }
   }
 }
 
-void AuthHandler::sendVerificationCode(HttpRequest& httpRequest,
-                                       HttpResponse& httpResponse) {
-  json requestJson = HttpUtil::parseRequestBody(httpRequest.getBody());
+void AuthHandler::sendVerificationCode(HttpRequest& request,
+                                       HttpResponse& response) {
+  json requestJson = HttpUtil::parseRequestBody(request.body());
   if (requestJson.type() == json::value_t::null) {
-    HttpUtil::setFailResponse(httpResponse, HttpResponse::InternalServerError,
+    HttpUtil::setFailResponse(response, HttpResponse::InternalServerError,
                               "请求体格式错误");
     return;
   }
   std::string email = requestJson["email"];
   if (!HttpUtil::legalEmail(email)) {
-    HttpUtil::setFailResponse(httpResponse, HttpResponse::BadRequest,
+    HttpUtil::setFailResponse(response, HttpResponse::BadRequest,
                               "邮箱格式错误");
     return;
   }
@@ -132,29 +130,27 @@ void AuthHandler::sendVerificationCode(HttpRequest& httpRequest,
 
   // 将验证码存入缓存
   if (!Cacher::instance().save_verification_code(email, verificationCode)) {
-    HttpUtil::setFailResponse(httpResponse, HttpResponse::BadRequest,
-                              "访问频繁");
+    HttpUtil::setFailResponse(response, HttpResponse::BadRequest, "访问频繁");
     return;
   }
 
   // 发送验证码
   if (!EmailSender::instance().sendVerificationCode(email, verificationCode)) {
-    HttpUtil::setFailResponse(httpResponse, HttpResponse::InternalServerError,
+    HttpUtil::setFailResponse(response, HttpResponse::InternalServerError,
                               "发送失败");
     return;
   }
 
   json responseJson;
-  HttpUtil::setSuccessResponse(httpResponse, responseJson, "发送成功");
+  HttpUtil::setSuccessResponse(response, responseJson, "发送成功");
 }
 
-void AuthHandler::resetPassword(HttpRequest& httpRequest,
-                                HttpResponse& httpResponse) {
+void AuthHandler::resetPassword(HttpRequest& request, HttpResponse& response) {
   json jsonResponse;
   // 解析注册参数
-  json requestJson = HttpUtil::parseRequestBody(httpRequest.getBody());
+  json requestJson = HttpUtil::parseRequestBody(request.body());
   if (jsonResponse.type() == json::value_t::null) {
-    HttpUtil::setFailResponse(httpResponse, HttpResponse::InternalServerError,
+    HttpUtil::setFailResponse(response, HttpResponse::InternalServerError,
                               "服务器异常");
     return;
   }
@@ -165,14 +161,13 @@ void AuthHandler::resetPassword(HttpRequest& httpRequest,
   if (!HttpUtil::legalEmail(email) ||
       !HttpUtil::legalVerificationCode(verificationCode) ||
       !HttpUtil::legalPassword(password)) {
-    HttpUtil::setFailResponse(httpResponse, HttpResponse::BadRequest,
-                              "格式错误");
+    HttpUtil::setFailResponse(response, HttpResponse::BadRequest, "格式错误");
     return;
   }
 
   // 检验验证码的有效性
   if (!Cacher::instance().check_verification_code(email, verificationCode)) {
-    HttpUtil::setFailResponse(httpResponse, HttpResponse::Unauthorized,
+    HttpUtil::setFailResponse(response, HttpResponse::Unauthorized,
                               "验证码无效");
     return;
   }
@@ -180,16 +175,16 @@ void AuthHandler::resetPassword(HttpRequest& httpRequest,
   // 调用数据库接口
   switch (DatabaseService::resetPassword(email, password)) {
     case DatabaseService::email_not_registered: {
-      HttpUtil::setFailResponse(httpResponse, HttpResponse::Unauthorized,
+      HttpUtil::setFailResponse(response, HttpResponse::Unauthorized,
                                 "邮箱尚未注册");
       break;
     }
     case DatabaseService::password_reset_successful: {
-      HttpUtil::setSuccessResponse(httpResponse, jsonResponse, "密码修改成功");
+      HttpUtil::setSuccessResponse(response, jsonResponse, "密码修改成功");
       break;
     }
     default: {
-      HttpUtil::setFailResponse(httpResponse, HttpResponse::InternalServerError,
+      HttpUtil::setFailResponse(response, HttpResponse::InternalServerError,
                                 "服务器异常");
       break;
     }

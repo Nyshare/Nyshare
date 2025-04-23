@@ -9,11 +9,11 @@ StaticFileMiddleware::StaticFileMiddleware(const std::string& staticDir)
 void StaticFileMiddleware::handleRequest(HttpRequest& httpRequest,
                                          HttpResponse& httpResponse,
                                          std::function<void()> next) {
-  if (httpRequest.getMethod() != HttpRequest::GET) {
+  if (httpRequest.method() != HttpRequest::GET) {
     next();
     return;
   }
-  std::string path = httpRequest.getPath();
+  std::string path = httpRequest.url();
   if (path == "/") {
     path = "/index.html";
   }
@@ -26,14 +26,12 @@ void StaticFileMiddleware::handleRequest(HttpRequest& httpRequest,
     std::string fallbackPath = _staticDir + "/404.html";
     if (Filer::fileExists(fallbackPath)) {
       std::string fallbackContent = Filer::readFile(fallbackPath);
-      httpResponse.setBody(fallbackContent);
-      httpResponse.setStatusCode(HttpResponse::NotFound);
-      httpResponse.addHeader("Content-Length",
-                             std::to_string(fallbackContent.size()));
-      httpResponse.addHeader("Content-Type",
-                             Filer::getMimeTypeFromFilePath(fallbackPath));
+      httpResponse.body(fallbackContent)
+          .status(HttpResponse::NotFound)
+          .content_length(fallbackContent.size())
+          .content_type(Filer::getMimeTypeFromFilePath(fallbackPath));
     } else {
-      httpResponse.setStatusCode(HttpResponse::NotFound);
+      httpResponse.status(HttpResponse::NotFound);
     }
     return;
   }
@@ -41,15 +39,13 @@ void StaticFileMiddleware::handleRequest(HttpRequest& httpRequest,
   std::string buffer = Filer::readFile(fullPath);
   if (buffer.empty()) {
     warn("[StaticFileMiddleware] File is empty:%s", fullPath.c_str());
-    httpResponse.setStatusCode(HttpResponse::InternalServerError);
+    httpResponse.status(HttpResponse::InternalServerError);
     return;
   }
-  httpResponse.setBody(buffer);
-  httpResponse.setStatusCode(HttpResponse::OK);
-  httpResponse.addHeader("Content-Length", std::to_string(buffer.size()));
-  httpResponse.addHeader("Content-Type",
-                         Filer::getMimeTypeFromFilePath(fullPath));
-  httpResponse.addHeader("Connection", "keep-alive");
+  httpResponse.body(buffer)
+      .status(HttpResponse::OK)
+      .content_length(buffer.size())
+      .content_type(Filer::getMimeTypeFromFilePath(fullPath));
 }
 
 void StaticFileMiddleware::handleResponse(HttpRequest& httpRequest,

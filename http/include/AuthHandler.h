@@ -6,13 +6,12 @@
 class AuthHandler {
  public:
   // 登录
-  static void login(HttpRequest& httpRequest, HttpResponse& httpResponse);
+  static void login(HttpRequest& request, HttpResponse& response);
   // 注册
-  static void signup(HttpRequest& httpRequest, HttpResponse& httpResponse);
+  static void signup(HttpRequest& request, HttpResponse& response);
   // 发送验证码
-  static void sendVerificationCode(HttpRequest& httpRequest,
-                                   HttpResponse& httpResponse);
+  static void sendVerificationCode(HttpRequest& request,
+                                   HttpResponse& response);
   // 重置密码
-  static void resetPassword(HttpRequest& httpRequest,
-                            HttpResponse& httpResponse);
+  static void resetPassword(HttpRequest& request, HttpResponse& response);
 };

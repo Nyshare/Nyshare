@@ -27,7 +27,7 @@ class HttpUtil {
   static void setSuccessResponse(HttpResponse& res, json& jsonResponse,
                                  const std::string& msg);
   // 统一设置false响应
-  static void setFailResponse(HttpResponse& res, HttpResponse::StatusCode code,
+  static void setFailResponse(HttpResponse& res, HttpResponse::STATUS code,
                               const std::string& msg);
   // 将请求体解析为json格式，失败返回null类型的json
   static json parseRequestBody(const std::string& body);

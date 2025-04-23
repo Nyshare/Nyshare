@@ -1,4 +1,4 @@
-#include "HttpHandler.h"
+#include "HttpHandlerPool.h"
 #include "Server.h"
 
 void onconnect(Connection *conn);
@@ -15,5 +15,6 @@ void onconnect(Connection *conn) {
     return;
   }
   // 处理数据
-  conn->write(HttpHandler().handleHttpRequest(conn->read_buffer()));
+  conn->write(HttpHandlerPool::instance().acquire()->handleHttpRequest(
+      conn->read_buffer()));
 }

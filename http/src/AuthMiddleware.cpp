@@ -11,15 +11,15 @@ void AuthMiddleware::handleRequest(HttpRequest& httpRequest,
                                    std::function<void()> next) {
   static const std::unordered_set<std::string> protectedPaths = {
       "/api/upload_post", "/upload.html"};
-  if (protectedPaths.find(httpRequest.getPath()) == protectedPaths.end()) {
+  if (protectedPaths.find(httpRequest.url()) == protectedPaths.end()) {
     next();
     return;
   }
   json requestJson;
   // 获取包含 token 的响应头
-  std::string auth = httpRequest.getHeader("Authorization");
+  std::string auth = httpRequest[HttpRequest::AUTHORIZATION];
   if (auth.empty()) {
-    httpResponse.addHeader("Location", "/login.html");
+    httpResponse.set(HttpResponse::LOCATION, "/login.html");
     HttpUtil::setFailResponse(httpResponse, HttpResponse::Found, " token无效");
     return;
   }
@@ -27,13 +27,13 @@ void AuthMiddleware::handleRequest(HttpRequest& httpRequest,
   // 从请求中提取 token
   std::string token = HttpUtil::extract_token(httpRequest);
   if (token.empty()) {
-    httpResponse.addHeader("Location", "/login.html");
+    httpResponse.set(HttpResponse::LOCATION, "/login.html");
     HttpUtil::setFailResponse(httpResponse, HttpResponse::Found, " token无效");
     return;
   }
   // 验证 token
   if (!HttpUtil::verify_token(token)) {
-    httpResponse.addHeader("Location", "/login.html");
+    httpResponse.set(HttpResponse::LOCATION, "/login.html");
     HttpUtil::setFailResponse(httpResponse, HttpResponse::Found, " token无效");
     return;
   }

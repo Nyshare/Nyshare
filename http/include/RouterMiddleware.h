@@ -1,11 +1,13 @@
 #pragma once
 
+#include <memory>
+
 #include "Middleware.h"
 #include "Router.h"
 
 class RouterMiddleware : public Middleware {
  public:
-  explicit RouterMiddleware(const Router& router);
+  explicit RouterMiddleware(std::shared_ptr<Router> router);
 
   void handleRequest(HttpRequest& httpRequest, HttpResponse& httpResponse,
                      std::function<void()> next) override;
@@ -14,5 +16,5 @@ class RouterMiddleware : public Middleware {
                       HttpResponse& httpResponse) override;
 
  private:
-  const Router& _router;
+  std::shared_ptr<Router> router_;
 };

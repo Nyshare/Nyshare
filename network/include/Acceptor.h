@@ -13,8 +13,6 @@ class Acceptor {
 
   void bind(const std::string &host, int port);
 
-  void bind(int port);
-
   void listen(int count = SOMAXCONN);
 
   void accept();
