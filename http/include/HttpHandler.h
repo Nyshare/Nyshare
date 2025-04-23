@@ -15,7 +15,7 @@ class MiddlewareChain;
 
 class HttpHandler {
  public:
-  HttpHandler();  // 构造函数
+  HttpHandler(std::shared_ptr<MiddlewareChain> middlewareChain);  // 构造函数
 
   // 功能：处理原始的HTTP请求字符串，返回响应字符串
   // 参数：HTTP请求的原始字符串
@@ -25,6 +25,5 @@ class HttpHandler {
  private:
   std::unique_ptr<HttpRequest> _httpRequest;          // 存储HTTP请求的各个部分
   std::unique_ptr<HttpResponse> _httpResponse;        // 生成HTTP响应
-  std::unique_ptr<Router> _router;                    // HTTP请求的路由匹配
-  std::unique_ptr<MiddlewareChain> _middlewareChain;  // 保存并执行中间件链
+  std::shared_ptr<MiddlewareChain> _middlewareChain;  // 保存并执行中间件链
 };

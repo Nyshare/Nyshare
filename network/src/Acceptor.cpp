@@ -37,26 +37,6 @@ void Acceptor::bind(const std::string& host, int port) {
   }
 }
 
-void Acceptor::bind(int port) {
-  if (address_) {
-    address_.reset();
-  }
-  try {
-    address_ = std::make_unique<InetAddress>(port);
-  } catch (const std::exception& e) {
-    warn("[Socket] Failed to initialize address for INADDR_ANY:%d: %s", port,
-         e.what());
-    throw std::runtime_error("[Socket] Failed to initialize address");
-  }
-  if (::bind(socket_->fd(), address_->addr(), address_->len()) == -1) {
-    fatal("[Socket] Failed to bind to address INADDR_ANY:%d: %s", port,
-          strerror(errno));
-    throw std::runtime_error("[Socket] Failed to bind to address");
-  } else {
-    info("[Socket] Successfully bound to address INANDDR_ANY:%d", port);
-  }
-}
-
 void Acceptor::listen(int count) {
   if (::listen(socket_->fd(), count) == -1) {
     fatal("[Acceptor] Failed to listen on socket %d: %s", socket_->fd(),

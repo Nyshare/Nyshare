@@ -118,10 +118,10 @@ bool HttpUtil::legalVerificationCode(const std::string& verificationCode) {
 void HttpUtil::setjsonResponse(HttpResponse& httpResponse,
                                const json& jsonResponse) {
   std::string body = jsonResponse.dump();
-  httpResponse.setBody(body);
-  httpResponse.addHeader("Content-Type", "application/json");
-  httpResponse.addHeader("Content-Length", std::to_string(body.size()));
-  httpResponse.addHeader("Connection", "keep-alive");
+  httpResponse.body(body)
+      .content_type("application/json")
+      .content_length(body.size())
+      .set("Connection", "keep-alive");
 }
 
 std::string HttpUtil::generateVerificationCode() {
@@ -140,16 +140,16 @@ void HttpUtil::setSuccessResponse(HttpResponse& res, json& jsonResponse,
                                   const std::string& msg) {
   jsonResponse["success"] = true;
   jsonResponse["message"] = msg;
-  res.setStatusCode(HttpResponse::OK);
+  res.status(HttpResponse::OK);
   setjsonResponse(res, jsonResponse);
 }
 
-void HttpUtil::setFailResponse(HttpResponse& res, HttpResponse::StatusCode code,
+void HttpUtil::setFailResponse(HttpResponse& res, HttpResponse::STATUS code,
                                const std::string& msg) {
   json json;
   json["success"] = false;
   json["message"] = msg;
-  res.setStatusCode(code);
+  res.status(code);
   setjsonResponse(res, json);
 }
 
@@ -194,7 +194,7 @@ bool HttpUtil::verify_token(const std::string& token_str) {
 
 std::string HttpUtil::extract_token(const HttpRequest& request) {
   static const std::string empty_string;
-  std::string auth = request.getHeader("Authorization");
+  std::string auth = request[HttpRequest::AUTHORIZATION];
   if (auth.empty()) {
     return empty_string;
   }

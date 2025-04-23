@@ -83,6 +83,7 @@ document.getElementById('post-btn').addEventListener('click', () => {
       document.open();
       document.write(html);
       document.close();
+
     })
     .catch(err => {
       alert('无法加载投稿页');

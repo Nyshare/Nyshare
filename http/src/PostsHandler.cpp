@@ -40,7 +40,7 @@ void PostsHandler::handleUploadPost(const HttpRequest& request,
   }
 
   // 提取文件内容
-  json requestJson = HttpUtil::parseRequestBody(request.getBody());
+  json requestJson = HttpUtil::parseRequestBody(request.body());
   if (requestJson.type() != json::value_t::object) {
     HttpUtil::setFailResponse(response, HttpResponse::BadRequest,
                               "请求体格式错误");

@@ -2,16 +2,14 @@
 
 #include "Logger.h"
 
-RouterMiddleware::RouterMiddleware(const Router& router) : _router(router) {}
+RouterMiddleware::RouterMiddleware(std::shared_ptr<Router> router)
+    : router_(router) {}
 
 void RouterMiddleware::handleRequest(HttpRequest& httpRequest,
                                      HttpResponse& httpResponse,
                                      std::function<void()> next) {
-  if (!_router.route(httpRequest, httpResponse)) {
-    // info("[RouterMiddleware] Route not found:%s %s",
-    //      httpRequest.methodToString().c_str(),
-    //      httpRequest.getPath().c_str());
-    // httpResponse.setStatusCode(HttpResponse::NotFound);
+  if (!router_->route(httpRequest, httpResponse)) {
+    // 路由匹配失败，交由下一个中间件处理
     next();
   }
 }

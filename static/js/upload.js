@@ -39,6 +39,8 @@ document.getElementById('uploadForm').addEventListener('submit', async function 
     if (data.success) {
       resultDiv.style.color = 'green';
       resultDiv.textContent = data.message || '作品上传成功！';
+      alert('作品上传成功')
+      window.location.href = '/index.html';
     } else {
       resultDiv.style.color = 'red';
       resultDiv.textContent = data.message || '上传失败！';
